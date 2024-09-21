@@ -1,4 +1,4 @@
-class DataModel {
+class TodoModel {
   String? sId;
   String? title;
   String? description;
@@ -6,7 +6,7 @@ class DataModel {
   String? createdAt;
   String? updatedAt;
 
-  DataModel(
+  TodoModel(
       {this.sId,
       this.title,
       this.description,
@@ -14,7 +14,7 @@ class DataModel {
       this.createdAt,
       this.updatedAt});
 
-  DataModel.fromJson(Map<dynamic, dynamic> json) {
+  TodoModel.fromJson(Map<dynamic, dynamic> json) {
     sId = json['_id'];
     title = json['title'];
     description = json['description'];
