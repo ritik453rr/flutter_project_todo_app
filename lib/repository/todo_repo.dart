@@ -1,4 +1,4 @@
-import 'package:todo_app/model/toto_model.dart';
+import 'package:todo_app/model/todo_model.dart';
 import 'package:todo_app/res/app_url.dart';
 import 'package:todo_app/services/rest_api_services.dart';
 
@@ -28,8 +28,8 @@ class TodoRepo {
 
   //update
   Future<void> updateTodo(
-      {required String title,
-      required String description,
+      {required String? title,
+      required String? description,
       required String id}) async {
     await restApiServices.putRequest(
         putUrl: AppUrl.todoPutUrl,

@@ -44,18 +44,21 @@ class RestApiServices {
   //Put Request....
   Future<void> putRequest(
       {required String putUrl,
-      required String title,
-      required String description,
+      required String? title,
+      required String? description,
       required String id}) async {
     final body = {
       "title": title,
       "description": description,
-      "is_completed": false
+      "is_completed": true
     };
     final response = await http.put(Uri.parse(putUrl + id),
         body: jsonEncode(body), headers: {'Content-Type': 'application/json'});
     if (response.statusCode == 200) {
       print("Updated Successfully");
+    } else {
+      print(response.statusCode);
+      print("Not Updated");
     }
   }
 

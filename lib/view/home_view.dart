@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/model/toto_model.dart';
+import 'package:todo_app/model/todo_model.dart';
 import 'package:todo_app/view/add_todo_view.dart';
 import 'package:todo_app/view/todo_view.dart';
 import 'package:todo_app/view_model/todo_view_model.dart';
@@ -83,33 +83,40 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
           // Todo List using FutureBuilder
-          Expanded(
-            child: Consumer<TodoViewModel>(
-              builder: (context, todoProvider, child) {
-                return FutureBuilder<List<TodoModel>>(
-                  future: todoProvider.todoList,
-                  builder: (context, snapshot) {
-                    // Waiting state
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
+          Consumer<TodoViewModel>(
+            builder: (context, todoProvider, child) {
+              return FutureBuilder<List<TodoModel>>(
+                future: todoProvider.todoList,
+                builder: (context, snapshot) {
+                  // Waiting state
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Expanded(
+                      child: Center(
                         child: CircularProgressIndicator(
                           color: Colors.red,
                         ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return const Center(
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    print(snapshot.error);
+                    return const Expanded(
+                      child: Center(
                         child: Text("Error Loading Data"),
-                      );
-                    } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                      return const Center(
+                      ),
+                    );
+                  } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                    return const Expanded(
+                      child: Center(
                         child: Text(
                           "Empty",
                           style: TextStyle(fontSize: 24, color: Colors.grey),
                         ),
-                      );
-                    } else if (snapshot.hasData) {
-                      final todoList = snapshot.data;
-                      return Padding(
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
+                    final List<TodoModel>? todoList = snapshot.data;
+                    return Expanded(
+                      child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 13),
                         child: ListView.builder(
                           itemCount: todoList?.length ?? 0,
@@ -126,8 +133,8 @@ class _HomeViewState extends State<HomeView> {
                                 builder: (context, todoProvider, child) {
                                   return ListTile(
                                     //View Todo.........
-                                    onTap: ()  {
-                                       Navigator.push(
+                                    onTap: () {
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => TodoView(
@@ -135,14 +142,43 @@ class _HomeViewState extends State<HomeView> {
                                           ),
                                         ),
                                       );
-                                  
                                     },
+                                    //Deleting todo....
                                     onLongPress: () async {
-                                      await todoProvider
-                                          .deleteTodo(todo.sId.toString());
-                                      todoProvider.fetchTodoList();
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text("Delete Todo"),
+                                            content:
+                                                Text("sure to delete todo?"),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                
+                                                },
+                                                child: Text("No"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  await todoProvider.deleteTodo(
+                                                      todo.sId.toString());
+                                                  todoProvider.fetchTodoList();
+                                                },
+                                                child: Text("Yes"),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
                                     },
-                                    title: Text(todo.title ?? 'No Title'),
+                                    //Todo title....
+                                    title: Text(
+                                      todo.title ?? 'No Title',
+                                      maxLines: 1,
+                                    ),
                                     subtitle: Text(
                                       todo.description ?? 'No Description',
                                       maxLines: 1,
@@ -153,18 +189,20 @@ class _HomeViewState extends State<HomeView> {
                             );
                           },
                         ),
-                      );
-                    } else {
-                      return const Center(
+                      ),
+                    );
+                  } else {
+                    return const Expanded(
+                      child: Center(
                         child: CircularProgressIndicator(
                           color: Colors.white,
                         ),
-                      );
-                    }
-                  },
-                );
-              },
-            ),
+                      ),
+                    );
+                  }
+                },
+              );
+            },
           ),
         ],
       ),
